@@ -2,18 +2,7 @@
 /* eslint-disable no-path-concat */
 /* eslint-disable func-names */
 // Configuration for your app
-function extendTypescriptToWebpack (cfg) {
-  // added the type-script supports
-  cfg.resolve.extensions.push('.ts')
-  cfg.module.rules.push({
-    test: /\.ts$/,
-    loader: 'ts-loader',
-    options: {
-      appendTsSuffixTo: [/\.vue$/],
-      configFile: './tsconfig.json'
-    }
-  })
-}
+var getTransformer = require('ts-transform-graphql-tag').getTransformer
 
 module.exports = function (ctx) {
   return {
@@ -66,6 +55,16 @@ module.exports = function (ctx) {
 
       // https://quasar.dev/quasar-cli/cli-documentation/handling-webpack
       extendWebpack (cfg) {
+        cfg.resolve.extensions.push('.ts')
+        cfg.module.rules.push({
+          test: /\.ts$/,
+          loader: 'ts-loader',
+          options: {
+            appendTsSuffixTo: [/\.vue$/],
+            // configFile: './tsconfig.json',
+            getCustomTransformers: () => ({ before: [getTransformer()] })
+          }
+        })
         cfg.module.rules.push({
           enforce: 'pre',
           test: /\.(js|vue)$/,

@@ -26,7 +26,8 @@
 
 <script>
 import gql from 'graphql-tag'
-import { createProject as mutation } from '../graphql/createProject'
+// import cannot find the createProject module !?
+// import { createProject as mutation } from '../graphql/createProject.ts'
 
 export default {
   data () {
@@ -48,16 +49,29 @@ export default {
     },
 
     onReset () {
-      this.name = null
-      this.age = null
-      this.accept = false
+      this.titile = null
     },
 
     async createProject () {
       // Call to the graphql mutation
       const results = await this.$apollo.mutate({
         // Query q
-        mutation: mutation(this.name)
+        // mutation: mutation(this.name)
+        mutation: gql`
+            mutation {
+              insert_assets(
+                objects: { 
+                  name: ${this.title},
+                  asset_type: project,
+                  privacy_type: private
+                }
+              ) {
+                returning {
+                  id
+                }
+              }
+            }
+          `
       })
 
       const project = results.data.insert_assets.returning[0]
